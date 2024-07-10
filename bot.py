@@ -13,6 +13,15 @@ import pytz
 from aiohttp import web
 from plugins import web_server, check_expired_premium
 import time
+import socket
+
+def find_free_port(start_port):
+    port = start_port
+    while True:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            if s.connect_ex(('0.0.0.0', port)) != 0:
+                return port
+            port += 1
 
 class Bot(Client):
     def __init__(self):
@@ -48,13 +57,13 @@ class Bot(Client):
         app = web.AppRunner(await web_server())
         await app.setup()
         bind_address = "0.0.0.0"
-        await web.TCPSite(app, bind_address, PORT).start()
+        free_port = find_free_port(5000)
+        await web.TCPSite(app, bind_address, free_port).start()
         await self.send_message(chat_id=LOG_CHANNEL, text=f"<b>{me.mention} ʀᴇsᴛᴀʀᴛᴇᴅ 🤖\n\n📆 ᴅᴀᴛᴇ - <code>{today}</code>\n🕙 ᴛɪᴍᴇ - <code>{timee}</code>\n🌍 ᴛɪᴍᴇ ᴢᴏɴᴇ - <code>Asia/Kolkata</code></b>")
-        # await self.send_message(chat_id=SUPPORT_GROUP, text=f"<b>ʀᴀᴅʜᴇ ʀᴀᴅʜᴇ ᴇᴠᴇʀʏᴏɴᴇ 😚</b>")
         tt = time.time() - st
         seconds = int(datetime.timedelta(seconds=tt).seconds)
         for admin in ADMINS:
-            await self.send_message(chat_id=admin, text=f"<b>✅ ʙᴏᴛ ʀᴇsᴛᴀʀᴛᴇᴅ\n🕥 ᴛɪᴍᴇ ᴛᴀᴋᴇɴ - <code>{seconds} sᴇᴄᴏɴᴅs</code></b>")
+            await self.send_message(chat_id=6140468904, text=f"<b>✅ ʙᴏᴛ ʀᴇsᴛᴀʀᴛᴇᴅ\n🕥 ᴛɪᴍᴇ ᴛᴀᴋᴇɴ - <code>{seconds} sᴇᴄᴏɴᴅs</code></b>")
 
     async def stop(self, *args):
         await super().stop()
@@ -101,3 +110,4 @@ class Bot(Client):
 
 app = Bot()
 app.run()
+        
